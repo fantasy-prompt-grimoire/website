@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fantasy Prompt Grimoire｜Coloring Prompt Generator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Cinzel+Decorative:wght@700&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#100c1a;
+    --bg-vignette:#1a1329;
+    --panel:#181228;
+    --panel-border:rgba(196,158,74,.22);
+    --gold:#c49e4a;
+    --gold-bright:#e3bf6d;
+    --wine:#5c1f2e;
+    --ink:#e9e2cf;
+    --ink-dim:#948aae;
+    --ink-faint:#6b6285;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:'EB Garamond',Georgia,serif;
+    background:
+      radial-gradient(ellipse at top, var(--bg-vignette) 0%, var(--bg) 55%),
+      var(--bg);
+    color:var(--ink);
+    min-height:100vh;
+    padding:3rem 1.25rem 2rem;
+  }
+  .container{max-width:640px;margin:0 auto}
+  .crest{display:flex;justify-content:center;margin-bottom:1rem}
+  .crest svg{opacity:.85}
+  h1{
+    font-family:'Cinzel Decorative','Cinzel',serif;
+    font-size:1.5rem;font-weight:700;text-align:center;letter-spacing:.03em;
+    background:linear-gradient(180deg,var(--gold-bright),var(--gold));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    margin-bottom:.5rem;
+  }
+  .subtitle{font-size:.85rem;color:var(--ink-dim);text-align:center;margin-bottom:.4rem;font-style:italic}
+  .bonus-note{
+    font-size:.72rem;color:var(--gold);text-align:center;letter-spacing:.08em;
+    text-transform:uppercase;margin-bottom:2rem;opacity:.85;
+  }
+  .card{
+    background:var(--panel);border-radius:6px;padding:1.5rem 1.5rem 1.25rem;
+    margin-bottom:1.25rem;border:1px solid var(--panel-border);
+    box-shadow:0 12px 32px -16px rgba(0,0,0,.6);
+  }
+  .section-gap{margin-bottom:1.35rem}
+  .section-gap:last-child{margin-bottom:0}
+  .section-label{
+    font-family:'Cinzel',serif;font-size:.68rem;color:var(--gold);margin-bottom:.6rem;
+    letter-spacing:.14em;text-transform:uppercase;
+  }
+  .tag-group{display:flex;flex-wrap:wrap;gap:8px}
+  .tag{
+    padding:6px 14px;border-radius:3px;font-size:.85rem;font-family:'EB Garamond',serif;
+    border:1px solid rgba(148,138,174,.35);cursor:pointer;background:rgba(255,255,255,.02);
+    color:var(--ink-dim);transition:all .18s;
+  }
+  .tag:hover{border-color:var(--gold);color:var(--gold-bright)}
+  .tag.sel{background:rgba(196,158,74,.14);border-color:var(--gold);color:var(--gold-bright);font-weight:600}
+  .custom-label{
+    font-family:'Cinzel',serif;font-size:.68rem;color:var(--gold);margin-bottom:.6rem;display:block;
+    letter-spacing:.14em;text-transform:uppercase;
+  }
+  .custom-input{
+    width:100%;border:1px solid rgba(148,138,174,.35);border-radius:3px;padding:9px 12px;
+    font-size:.85rem;font-family:'EB Garamond',serif;color:var(--ink);background:rgba(0,0,0,.25);
+    outline:none;transition:border .15s;
+  }
+  .custom-input:focus{border-color:var(--gold)}
+  .custom-input::placeholder{color:var(--ink-faint)}
+  .prompt-card{
+    background:linear-gradient(180deg,rgba(196,158,74,.06),rgba(196,158,74,.02));
+    border-radius:6px;padding:1.25rem 1.375rem;margin-bottom:.85rem;border:1px solid var(--panel-border);
+  }
+  .prompt-label{
+    font-family:'Cinzel',serif;font-size:.68rem;color:var(--gold);display:flex;align-items:center;gap:6px;
+    margin-bottom:.7rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;
+  }
+  .prompt-text{font-size:.92rem;color:var(--ink);line-height:1.8;word-break:break-word}
+  .action-row{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:1.4rem;justify-content:center}
+  .btn-seal{
+    width:64px;height:64px;border-radius:50%;
+    background:radial-gradient(circle at 35% 30%, var(--gold-bright), var(--wine) 70%, #3d1420 100%);
+    border:2px solid var(--gold);color:#160a0e;cursor:pointer;display:flex;align-items:center;justify-content:center;
+    font-size:1.3rem;box-shadow:0 6px 18px -6px rgba(0,0,0,.7), inset 0 0 12px rgba(255,255,255,.15);
+    transition:transform .15s;
+  }
+  .btn-seal:hover{transform:scale(1.06)}
+  .btn-seal:active{transform:scale(.96)}
+  .btn-seal.copied{background:radial-gradient(circle at 35% 30%, #a7e3b0, #2a7a50 70%, #143d26 100%)}
+  .btn-seal.failed{background:radial-gradient(circle at 35% 30%, #f0c96b, #a06a1f 70%, #4a2c0a 100%)}
+  .btn-reset{
+    padding:9px 18px;border-radius:3px;font-size:.8rem;border:1px solid rgba(148,138,174,.35);
+    background:transparent;color:var(--ink-dim);cursor:pointer;font-family:'EB Garamond',serif;
+    letter-spacing:.04em;transition:all .15s;
+  }
+  .btn-reset:hover{border-color:var(--gold);color:var(--gold-bright)}
+  .seal-caption{text-align:center;font-size:.68rem;color:var(--ink-faint);letter-spacing:.1em;text-transform:uppercase;margin-top:.5rem}
+  footer{text-align:center;font-size:.7rem;color:var(--ink-faint);margin-top:2.5rem;padding-bottom:1rem;line-height:1.7}
+  @media(max-width:480px){
+    body{padding:2rem .9rem}
+    h1{font-size:1.25rem}
+    .card{padding:1.1rem 1.1rem}
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="crest">
+    <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+      <path d="M20 3 L23 16 L36 20 L23 24 L20 37 L17 24 L4 20 L17 16 Z" stroke="#c49e4a" stroke-width="1.2" fill="rgba(196,158,74,.08)"/>
+    </svg>
+  </div>
+  <h1>Fantasy Prompt Grimoire</h1>
+  <div class="subtitle">Summon your own fantasy world, one coloring prompt at a time</div>
+  <div class="bonus-note">Free bonus tool for book owners</div>
+
+  <div class="card">
+    <div class="section-gap">
+      <div class="section-label">World Theme</div>
+      <div class="tag-group">
+        <button class="tag" data-g="world" data-v="fantasy">Fantasy</button>
+        <button class="tag" data-g="world" data-v="grimoire">Grimoire</button>
+        <button class="tag" data-g="world" data-v="princess">Fairy Tale Princess</button>
+        <button class="tag sel" data-g="world" data-v="medieval">Medieval Europe</button>
+      </div>
+    </div>
+    <div class="section-gap">
+      <div class="section-label">Character</div>
+      <div class="tag-group">
+        <button class="tag sel" data-g="char" data-v="princess">Princess</button>
+        <button class="tag" data-g="char" data-v="witch">Witch</button>
+        <button class="tag" data-g="char" data-v="fairy">Fairy</button>
+        <button class="tag" data-g="char" data-v="knight">Knight</button>
+        <button class="tag" data-g="char" data-v="dragon">Dragon</button>
+        <button class="tag" data-g="char" data-v="elf">Elf</button>
+        <button class="tag" data-g="char" data-v="alchemist">Alchemist</button>
+      </div>
+    </div>
+    <div class="section-gap">
+      <div class="section-label">Setting</div>
+      <div class="tag-group">
+        <button class="tag" data-g="bg" data-v="magic_forest">Enchanted Forest</button>
+        <button class="tag sel" data-g="bg" data-v="castle">Ancient Castle</button>
+        <button class="tag" data-g="bg" data-v="flower_garden">Flower Garden</button>
+        <button class="tag" data-g="bg" data-v="moonlit_sky">Moonlit Sky</button>
+        <button class="tag" data-g="bg" data-v="magic_library">Magical Library</button>
+        <button class="tag" data-g="bg" data-v="ancient_ruins">Ancient Ruins</button>
+      </div>
+    </div>
+    <div class="section-gap" style="margin-bottom:0">
+      <div class="section-label">Mood</div>
+      <div class="tag-group">
+        <button class="tag" data-g="mood" data-v="dreamy">Dreamy</button>
+        <button class="tag" data-g="mood" data-v="mystical">Mystical</button>
+        <button class="tag sel" data-g="mood" data-v="romantic">Romantic &amp; Elegant</button>
+        <button class="tag" data-g="mood" data-v="dark">Dark Gothic</button>
+        <button class="tag" data-g="mood" data-v="cute">Cute &amp; Whimsical</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="section-gap" style="margin-bottom:0">
+      <div class="section-label">Line Weight</div>
+      <div class="tag-group">
+        <button class="tag" data-g="weight" data-v="thin">Thin (advanced)</button>
+        <button class="tag sel" data-g="weight" data-v="medium">Medium (recommended)</button>
+        <button class="tag" data-g="weight" data-v="thick">Thick (easy to color)</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <label class="custom-label" for="custom-kw">Extra keywords (optional)</label>
+    <input type="text" class="custom-input" id="custom-kw" placeholder="e.g. glowing runes, ethereal glow, golden hour...">
+  </div>
+
+  <div class="prompt-card">
+    <div class="prompt-label">Prompt</div>
+    <div class="prompt-text" id="prompt-en"></div>
+  </div>
+
+  <div class="action-row">
+    <div>
+      <button class="btn-seal" onclick="copyPrompt()" id="btn-copy" title="Copy prompt">🖋️</button>
+      <div class="seal-caption">Copy the seal</div>
+    </div>
+    <button class="btn-reset" onclick="resetAll()">🔄 Reset</button>
+  </div>
+
+  <footer>
+    This tool is a free bonus for owners of the book. The generated coloring-page prompts work with most modern text-to-image AI models, including the latest Google Gemini image models.<br>
+    All AI service names are trademarks of their respective owners. This tool is not affiliated with or endorsed by any of them.
+  </footer>
+</div>
+
+<script>
+const DATA = {
+  world:{fantasy:'a fantasy world',grimoire:'a mystical grimoire world',princess:'a fairy tale princess world',medieval:'a medieval European world'},
+  char:{princess:'princess',witch:'witch',fairy:'fairy',knight:'knight',dragon:'dragon',elf:'elf',alchemist:'alchemist'},
+  bg:{magic_forest:'in an enchanted forest',castle:'in an ancient castle',flower_garden:'in a flower garden',moonlit_sky:'under a moonlit sky',magic_library:'in a magical library',ancient_ruins:'among ancient ruins'},
+  mood:{dreamy:'dreamy atmosphere',mystical:'mystical atmosphere',romantic:'romantic and elegant atmosphere',dark:'dark gothic atmosphere',cute:'cute and whimsical atmosphere'},
+  weight:{
+    thin:'ultra-fine hairline line art, delicate thin outlines, micro-detailed intricate patterns, highly detailed illustration',
+    medium:'clean medium-weight line art, balanced outlines, intricate details, highly detailed illustration',
+    thick:'bold thick outlines, simplified clean linework, easy to color, moderate detail density'
+  },
+  base:'coloring book page, black and white, no shading, for adult coloring'
+};
+
+let sel={world:'medieval',char:'princess',bg:'castle',mood:'romantic',weight:'medium'};
+
+document.querySelectorAll('.tag').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    const g=btn.dataset.g,v=btn.dataset.v;
+    document.querySelectorAll(`.tag[data-g="${g}"]`).forEach(b=>b.classList.remove('sel'));
+    btn.classList.add('sel');
+    sel[g]=v;
+    buildPrompt();
+  });
+});
+document.getElementById('custom-kw').addEventListener('input',buildPrompt);
+
+function buildPrompt(){
+  const w=sel.world?DATA.world[sel.world]:'';
+  const c=sel.char?DATA.char[sel.char]:'';
+  const b=sel.bg?DATA.bg[sel.bg]:'';
+  const m=sel.mood?DATA.mood[sel.mood]:'';
+  const lw=sel.weight?DATA.weight[sel.weight]:DATA.weight.medium;
+  const extra=document.getElementById('custom-kw').value.trim();
+  const mid=extra?`gothic architecture, heraldic symbols, ${m}, ${extra}`:`gothic architecture, heraldic symbols, ${m}`;
+  const parts=[c&&w?`a ${w} ${c}`:c||w,b,mid,lw,DATA.base].filter(Boolean);
+  document.getElementById('prompt-en').textContent=parts.join(', ');
+}
+
+function fallbackCopy(text){
+  const ta=document.createElement('textarea');
+  ta.value=text;
+  ta.style.position='fixed';
+  ta.style.opacity='0';
+  document.body.appendChild(ta);
+  ta.focus();
+  ta.select();
+  let ok=false;
+  try{ ok=document.execCommand('copy'); }catch(e){ ok=false; }
+  document.body.removeChild(ta);
+  return ok;
+}
+
+function showCopyState(success){
+  const btn=document.getElementById('btn-copy');
+  const old=btn.textContent;
+  btn.textContent=success?'✅':'⚠️';
+  btn.classList.toggle('copied',success);
+  btn.classList.toggle('failed',!success);
+  setTimeout(()=>{btn.textContent=old;btn.classList.remove('copied','failed');},success?1800:2600);
+}
+
+function copyPrompt(){
+  const txt=document.getElementById('prompt-en').textContent;
+  if(!txt){ return; }
+  if(navigator.clipboard && window.isSecureContext){
+    navigator.clipboard.writeText(txt).then(()=>{
+      showCopyState(true);
+    }).catch(()=>{
+      const ok=fallbackCopy(txt);
+      showCopyState(ok);
+      if(!ok) alert('Copy failed automatically. Please select the prompt text and copy it manually.');
+    });
+  }else{
+    const ok=fallbackCopy(txt);
+    showCopyState(ok);
+    if(!ok) alert('Copy failed automatically. Please select the prompt text and copy it manually.');
+  }
+}
+
+function resetAll(){
+  sel={world:'medieval',char:'princess',bg:'castle',mood:'romantic',weight:'medium'};
+  document.querySelectorAll('.tag').forEach(b=>{
+    b.classList.remove('sel');
+    if(sel[b.dataset.g]===b.dataset.v)b.classList.add('sel');
+  });
+  document.getElementById('custom-kw').value='';
+  buildPrompt();
+}
+
+buildPrompt();
+</script>
+</body>
+</html>
