@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>魔導プロンプト生成書｜Fantasy Coloring Prompt Grimoire</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Cinzel+Decorative:wght@700&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#100c1a;
+    --bg-vignette:#1a1329;
+    --panel:#181228;
+    --panel-border:rgba(196,158,74,.22);
+    --gold:#c49e4a;
+    --gold-bright:#e3bf6d;
+    --wine:#5c1f2e;
+    --ink:#e9e2cf;
+    --ink-dim:#948aae;
+    --ink-faint:#6b6285;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:'EB Garamond',Georgia,serif;
+    background:
+      radial-gradient(ellipse at top, var(--bg-vignette) 0%, var(--bg) 55%),
+      var(--bg);
+    color:var(--ink);
+    min-height:100vh;
+    padding:3rem 1.25rem 2rem;
+  }
+  .container{max-width:640px;margin:0 auto}
+
+  .crest{
+    display:flex;justify-content:center;margin-bottom:1rem;
+  }
+  .crest svg{opacity:.85}
+
+  h1{
+    font-family:'Cinzel Decorative','Cinzel',serif;
+    font-size:1.5rem;
+    font-weight:700;
+    text-align:center;
+    letter-spacing:.03em;
+    background:linear-gradient(180deg,var(--gold-bright),var(--gold));
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+    margin-bottom:.5rem;
+  }
+  .subtitle{
+    font-size:.85rem;
+    color:var(--ink-dim);
+    text-align:center;
+    margin-bottom:.4rem;
+    font-style:italic;
+  }
+  .bonus-note{
+    font-size:.72rem;
+    color:var(--gold);
+    text-align:center;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    margin-bottom:2rem;
+    opacity:.85;
+  }
+
+  .divider{
+    display:flex;align-items:center;gap:10px;
+    margin:0 0 1.75rem;
+    color:var(--gold);
+  }
+  .divider::before,.divider::after{
+    content:'';flex:1;height:1px;
+    background:linear-gradient(90deg,transparent,var(--panel-border),transparent);
+  }
+  .divider svg{flex-shrink:0;opacity:.8}
+
+  .card{
+    background:var(--panel);
+    border-radius:6px;
+    padding:1.5rem 1.5rem 1.25rem;
+    margin-bottom:1.25rem;
+    border:1px solid var(--panel-border);
+    box-shadow:0 12px 32px -16px rgba(0,0,0,.6);
+  }
+
+  .section-gap{margin-bottom:1.35rem}
+  .section-gap:last-child{margin-bottom:0}
+  .section-label{
+    font-family:'Cinzel',serif;
+    font-size:.68rem;
+    color:var(--gold);
+    margin-bottom:.6rem;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+  }
+  .tag-group{display:flex;flex-wrap:wrap;gap:8px}
+  .tag{
+    padding:6px 14px;
+    border-radius:3px;
+    font-size:.85rem;
+    font-family:'EB Garamond',serif;
+    border:1px solid rgba(148,138,174,.35);
+    cursor:pointer;
+    background:rgba(255,255,255,.02);
+    color:var(--ink-dim);
+    transition:all .18s;
+  }
+  .tag:hover{border-color:var(--gold);color:var(--gold-bright)}
+  .tag.sel{
+    background:rgba(196,158,74,.14);
+    border-color:var(--gold);
+    color:var(--gold-bright);
+    font-weight:600;
+  }
+
+  .custom-label{
+    font-family:'Cinzel',serif;
+    font-size:.68rem;color:var(--gold);margin-bottom:.6rem;display:block;
+    letter-spacing:.14em;text-transform:uppercase;
+  }
+  .custom-input{
+    width:100%;border:1px solid rgba(148,138,174,.35);border-radius:3px;
+    padding:9px 12px;font-size:.85rem;font-family:'EB Garamond',serif;
+    color:var(--ink);background:rgba(0,0,0,.25);outline:none;transition:border .15s;
+  }
+  .custom-input:focus{border-color:var(--gold)}
+  .custom-input::placeholder{color:var(--ink-faint)}
+
+  .prompt-card{
+    background:linear-gradient(180deg,rgba(196,158,74,.06),rgba(196,158,74,.02));
+    border-radius:6px;padding:1.25rem 1.375rem;margin-bottom:.85rem;
+    border:1px solid var(--panel-border);
+  }
+  .prompt-label{
+    font-family:'Cinzel',serif;
+    font-size:.68rem;color:var(--gold);display:flex;align-items:center;gap:6px;
+    margin-bottom:.7rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;
+  }
+  .prompt-text{font-size:.92rem;color:var(--ink);line-height:1.8;word-break:break-word}
+  .prompt-ja .prompt-text{color:var(--ink-dim);font-style:italic}
+
+  .action-row{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:1.4rem;justify-content:center}
+
+  .btn-seal{
+    width:64px;height:64px;border-radius:50%;
+    background:radial-gradient(circle at 35% 30%, var(--gold-bright), var(--wine) 70%, #3d1420 100%);
+    border:2px solid var(--gold);
+    color:#160a0e;
+    cursor:pointer;
+    display:flex;align-items:center;justify-content:center;
+    font-size:1.3rem;
+    box-shadow:0 6px 18px -6px rgba(0,0,0,.7), inset 0 0 12px rgba(255,255,255,.15);
+    transition:transform .15s;
+  }
+  .btn-seal:hover{transform:scale(1.06)}
+  .btn-seal:active{transform:scale(.96)}
+  .btn-seal.copied{background:radial-gradient(circle at 35% 30%, #a7e3b0, #2a7a50 70%, #143d26 100%)}
+  .btn-seal.failed{background:radial-gradient(circle at 35% 30%, #f0c96b, #a06a1f 70%, #4a2c0a 100%)}
+
+  .btn-reset{
+    padding:9px 18px;border-radius:3px;font-size:.8rem;
+    border:1px solid rgba(148,138,174,.35);background:transparent;color:var(--ink-dim);
+    cursor:pointer;font-family:'EB Garamond',serif;letter-spacing:.04em;transition:all .15s;
+  }
+  .btn-reset:hover{border-color:var(--gold);color:var(--gold-bright)}
+
+  .seal-caption{
+    text-align:center;font-size:.68rem;color:var(--ink-faint);
+    letter-spacing:.1em;text-transform:uppercase;margin-top:.5rem;
+  }
+
+  footer{
+    text-align:center;font-size:.7rem;color:var(--ink-faint);
+    margin-top:2.5rem;padding-bottom:1rem;line-height:1.7;
+  }
+  footer a{color:var(--gold);text-decoration:none;border-bottom:1px solid rgba(196,158,74,.4)}
+
+  @media(max-width:480px){
+    body{padding:2rem .9rem}
+    h1{font-size:1.25rem}
+    .card{padding:1.1rem 1.1rem}
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="crest">
+    <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+      <path d="M20 3 L23 16 L36 20 L23 24 L20 37 L17 24 L4 20 L17 16 Z" stroke="#c49e4a" stroke-width="1.2" fill="rgba(196,158,74,.08)"/>
+    </svg>
+  </div>
+  <h1>Fantasy Prompt Grimoire</h1>
+  <div class="subtitle">あなただけの幻想世界を呼び出す、線画プロンプト生成書</div>
+  <div class="bonus-note">Amazon購入者限定 無料ボーナスツール</div>
+
+  <div class="card">
+    <div class="section-gap">
+      <div class="section-label">世界観テーマ</div>
+      <div class="tag-group">
+        <button class="tag" data-g="world" data-v="fantasy">ファンタジー</button>
+        <button class="tag" data-g="world" data-v="grimoire">魔導書（Grimoire）</button>
+        <button class="tag" data-g="world" data-v="princess">プリンセス</button>
+        <button class="tag sel" data-g="world" data-v="medieval">中世ヨーロッパ</button>
+      </div>
+    </div>
+
+    <div class="section-gap">
+      <div class="section-label">キャラクター</div>
+      <div class="tag-group">
+        <button class="tag sel" data-g="char" data-v="princess">プリンセス</button>
+        <button class="tag" data-g="char" data-v="witch">魔女</button>
+        <button class="tag" data-g="char" data-v="fairy">フェアリー</button>
+        <button class="tag" data-g="char" data-v="knight">騎士</button>
+        <button class="tag" data-g="char" data-v="dragon">ドラゴン</button>
+        <button class="tag" data-g="char" data-v="elf">エルフ</button>
+        <button class="tag" data-g="char" data-v="alchemist">錬金術師</button>
+      </div>
+    </div>
+
+    <div class="section-gap">
+      <div class="section-label">背景・世界観</div>
+      <div class="tag-group">
+        <button class="tag" data-g="bg" data-v="magic_forest">魔法の森</button>
+        <button class="tag sel" data-g="bg" data-v="castle">古城</button>
+        <button class="tag" data-g="bg" data-v="flower_garden">花の庭園</button>
+        <button class="tag" data-g="bg" data-v="moonlit_sky">月夜の空</button>
+        <button class="tag" data-g="bg" data-v="magic_library">魔法図書館</button>
+        <button class="tag" data-g="bg" data-v="ancient_ruins">古代遺跡</button>
+      </div>
+    </div>
+
+    <div class="section-gap" style="margin-bottom:0">
+      <div class="section-label">雰囲気</div>
+      <div class="tag-group">
+        <button class="tag" data-g="mood" data-v="dreamy">夢幻的</button>
+        <button class="tag" data-g="mood" data-v="mystical">神秘的</button>
+        <button class="tag sel" data-g="mood" data-v="romantic">ロマンティック</button>
+        <button class="tag" data-g="mood" data-v="dark">ダーク</button>
+        <button class="tag" data-g="mood" data-v="cute">キュート</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="section-gap" style="margin-bottom:0">
+      <div class="section-label">線の太さ</div>
+      <div class="tag-group">
+        <button class="tag" data-g="weight" data-v="thin">細い（上級者向け）</button>
+        <button class="tag sel" data-g="weight" data-v="medium">中（おすすめ）</button>
+        <button class="tag" data-g="weight" data-v="thick">太い（塗りやすい）</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <label class="custom-label" for="custom-kw">追加キーワード（任意・英語）</label>
+    <input type="text" class="custom-input" id="custom-kw" placeholder="例: glowing runes, ethereal glow, golden hour...">
+  </div>
+
+  <div class="prompt-card">
+    <div class="prompt-label">英語プロンプト</div>
+    <div class="prompt-text" id="prompt-en"></div>
+  </div>
+
+  <div class="prompt-card prompt-ja">
+    <div class="prompt-label">日本語訳</div>
+    <div class="prompt-text" id="prompt-ja"></div>
+  </div>
+
+  <div class="action-row">
+    <div>
+      <button class="btn-seal" onclick="copyPrompt()" id="btn-copy" title="プロンプトをコピー">🖋️</button>
+      <div class="seal-caption">封をコピー</div>
+    </div>
+    <button class="btn-reset" onclick="resetAll()">🔄 リセット</button>
+  </div>
+
+  <footer>
+    本ツールは書籍の購入者向け無料特典です。生成される線画プロンプトは、Google Gemini系の最新AI画像生成モデルなど、テキストから画像を生成するツール全般でご利用いただけます。<br>
+    ※各AIサービス名は各社の商標であり、本ツールはいずれの企業とも提携関係にありません。
+  </footer>
+</div>
+
+<script>
+const DATA = {
+  world:{fantasy:'a fantasy world',grimoire:'a mystical grimoire world',princess:'a fairy tale princess world',medieval:'a medieval European world'},
+  char:{princess:'princess',witch:'witch',fairy:'fairy',knight:'knight',dragon:'dragon',elf:'elf',alchemist:'alchemist'},
+  bg:{magic_forest:'in an enchanted forest',castle:'in an ancient castle',flower_garden:'in a flower garden',moonlit_sky:'under a moonlit sky',magic_library:'in a magical library',ancient_ruins:'among ancient ruins'},
+  mood:{dreamy:'dreamy atmosphere',mystical:'mystical atmosphere',romantic:'romantic and elegant atmosphere',dark:'dark gothic atmosphere',cute:'cute and whimsical atmosphere'},
+  weight:{
+    thin:'ultra-fine hairline line art, delicate thin outlines, micro-detailed intricate patterns, highly detailed illustration',
+    medium:'clean medium-weight line art, balanced outlines, intricate details, highly detailed illustration',
+    thick:'bold thick outlines, simplified clean linework, easy to color, moderate detail density'
+  },
+  base:'coloring book page, black and white, no shading, for adult coloring'
+};
+const JA_WORLD={fantasy:'ファンタジーの世界',grimoire:'神秘的な魔導書の世界',princess:'おとぎ話のプリンセスの世界',medieval:'中世ヨーロッパの世界'};
+const JA_CHAR={princess:'プリンセス',witch:'魔女',fairy:'フェアリー',knight:'騎士',dragon:'ドラゴン',elf:'エルフ',alchemist:'錬金術師'};
+const JA_BG={magic_forest:'魔法の森の中',castle:'古城の中',flower_garden:'花の庭園で',moonlit_sky:'月夜の空の下',magic_library:'魔法図書館の中',ancient_ruins:'古代遺跡の中'};
+const JA_MOOD={dreamy:'夢幻的な雰囲気',mystical:'神秘的な雰囲気',romantic:'ロマンティックでエレガントな雰囲気',dark:'ダークゴシックな雰囲気',cute:'キュートで愛らしい雰囲気'};
+const JA_WEIGHT={
+  thin:'極細のヘアラインの線画、繊細な細い輪郭線、精緻なマイクロディテール、高精細イラスト',
+  medium:'クリーンな中太の線画、バランスの取れた輪郭線、精緻なディテール、高精細イラスト',
+  thick:'太くはっきりした輪郭線、シンプルで塗りやすい線画、中程度のディテール密度'
+};
+const JA_BASE='塗り絵ページ、白黒、影なし、大人向け塗り絵';
+
+let sel={world:'medieval',char:'princess',bg:'castle',mood:'romantic',weight:'medium'};
+
+document.querySelectorAll('.tag').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    const g=btn.dataset.g,v=btn.dataset.v;
+    document.querySelectorAll(`.tag[data-g="${g}"]`).forEach(b=>b.classList.remove('sel'));
+    btn.classList.add('sel');
+    sel[g]=v;
+    buildPrompt();
+  });
+});
+document.getElementById('custom-kw').addEventListener('input',buildPrompt);
+
+function buildPrompt(){
+  const w=sel.world?DATA.world[sel.world]:'';
+  const c=sel.char?DATA.char[sel.char]:'';
+  const b=sel.bg?DATA.bg[sel.bg]:'';
+  const m=sel.mood?DATA.mood[sel.mood]:'';
+  const lw=sel.weight?DATA.weight[sel.weight]:DATA.weight.medium;
+  const extra=document.getElementById('custom-kw').value.trim();
+  const mid=extra?`gothic architecture, heraldic symbols, ${m}, ${extra}`:`gothic architecture, heraldic symbols, ${m}`;
+  const parts=[c&&w?`a ${w} ${c}`:c||w,b,mid,lw,DATA.base].filter(Boolean);
+  document.getElementById('prompt-en').textContent=parts.join(', ');
+
+  const jaw=sel.world?JA_WORLD[sel.world]:'';
+  const jac=sel.char?JA_CHAR[sel.char]:'';
+  const jab=sel.bg?JA_BG[sel.bg]:'';
+  const jam=sel.mood?JA_MOOD[sel.mood]:'';
+  const jalw=sel.weight?JA_WEIGHT[sel.weight]:JA_WEIGHT.medium;
+  const japarts=[jac&&jaw?`${jac}が${jaw}`:jac||jaw,jab,`ゴシック建築、紋章のシンボル、${jam}`,jalw,JA_BASE].filter(Boolean);
+  document.getElementById('prompt-ja').textContent=japarts.join('、');
+}
+
+function fallbackCopy(text){
+  const ta=document.createElement('textarea');
+  ta.value=text;
+  ta.style.position='fixed';
+  ta.style.opacity='0';
+  document.body.appendChild(ta);
+  ta.focus();
+  ta.select();
+  let ok=false;
+  try{ ok=document.execCommand('copy'); }catch(e){ ok=false; }
+  document.body.removeChild(ta);
+  return ok;
+}
+
+function showCopyState(success){
+  const btn=document.getElementById('btn-copy');
+  const old=btn.textContent;
+  btn.textContent=success?'✅':'⚠️';
+  btn.classList.toggle('copied',success);
+  btn.classList.toggle('failed',!success);
+  setTimeout(()=>{btn.textContent=old;btn.classList.remove('copied','failed');},success?1800:2600);
+}
+
+function copyPrompt(){
+  const txt=document.getElementById('prompt-en').textContent;
+  if(!txt){ return; }
+  if(navigator.clipboard && window.isSecureContext){
+    navigator.clipboard.writeText(txt).then(()=>{
+      showCopyState(true);
+    }).catch(()=>{
+      const ok=fallbackCopy(txt);
+      showCopyState(ok);
+      if(!ok) alert('自動コピーに失敗しました。プロンプトのテキストを長押し（またはドラッグ）して手動でコピーしてください。');
+    });
+  }else{
+    const ok=fallbackCopy(txt);
+    showCopyState(ok);
+    if(!ok) alert('自動コピーに失敗しました。プロンプトのテキストを長押し（またはドラッグ）して手動でコピーしてください。');
+  }
+}
+
+function resetAll(){
+  sel={world:'medieval',char:'princess',bg:'castle',mood:'romantic',weight:'medium'};
+  document.querySelectorAll('.tag').forEach(b=>{
+    b.classList.remove('sel');
+    if(sel[b.dataset.g]===b.dataset.v)b.classList.add('sel');
+  });
+  document.getElementById('custom-kw').value='';
+  buildPrompt();
+}
+
+buildPrompt();
+</script>
+</body>
+</html>
